@@ -1,0 +1,63 @@
+﻿#pragma kernel GetThreadInfo
+#pragma kernel KernelFunction_B
+
+// ComputeShader側から、グループIndex、スレッドIndexを返却する用バッファー
+struct ThreadInfo{
+    float3 groupID;
+    float3 groupThreadID;
+    float3 dispatchThreadID;
+};
+
+RWStructuredBuffer<ThreadInfo> threadInfo;
+
+// グループ数
+#define NUM_GROUP_X  7
+#define NUM_GROUP_Y  6
+#define NUM_GROUP_Z  5
+
+// スレッド数
+#define NUM_THREAD_X  4
+#define NUM_THREAD_Y  3
+#define NUM_THREAD_Z  2
+
+[numthreads(NUM_THREAD_X, NUM_THREAD_Y, NUM_THREAD_Z)]
+void GetThreadInfo(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID, uint3 dispatchThreadId : SV_DispatchThreadID)
+{
+    // 現在のグループIndex
+    int currentGroupIndex = (NUM_GROUP_X * NUM_GROUP_Y) * groupID.z + 
+                            (NUM_GROUP_X * groupID.y) + 
+                            groupID.x;
+                            
+    // １グループに含まれるスレッド数合計
+    int totalGroupThreadNum = NUM_THREAD_X * NUM_THREAD_Y * NUM_THREAD_Z;  
+                            
+    // 現在のグループ以前のスレッド数
+    int threadIndexOffset = currentGroupIndex * totalGroupThreadNum;
+    
+    // 現在のグループ内の現在のスレッドIndex
+    int currentGroupThreadIndex = (NUM_THREAD_X * NUM_THREAD_Y) * groupThreadID.z + 
+                                  (NUM_THREAD_X * groupThreadID.y) + 
+                                  groupThreadID.x;
+                               
+    // 現在の通しスレッドIndex
+    int currentDispatchThreadIndex = currentGroupThreadIndex + threadIndexOffset;
+   
+    // 結果を保存
+    threadInfo[currentDispatchThreadIndex].groupID.x = groupID.x;
+    threadInfo[currentDispatchThreadIndex].groupID.y = groupID.y;
+    threadInfo[currentDispatchThreadIndex].groupID.z = groupID.z;
+    threadInfo[currentDispatchThreadIndex].groupThreadID.x = groupThreadID.x;
+    threadInfo[currentDispatchThreadIndex].groupThreadID.y = groupThreadID.y;
+    threadInfo[currentDispatchThreadIndex].groupThreadID.z = groupThreadID.z;
+    threadInfo[currentDispatchThreadIndex].dispatchThreadID.x = dispatchThreadId.x;
+    threadInfo[currentDispatchThreadIndex].dispatchThreadID.y = dispatchThreadId.y;
+    threadInfo[currentDispatchThreadIndex].dispatchThreadID.z = dispatchThreadId.z;
+}
+
+
+
+#define NUM_THREAD_XX  4
+[numthreads(NUM_THREAD_XX, 1, 1)]
+void KernelFunction_B(uint3 groupID : SV_GroupID, uint3 groupThreadID : SV_GroupThreadID)
+{
+}
