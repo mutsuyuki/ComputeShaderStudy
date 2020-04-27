@@ -26,14 +26,14 @@ public class GetThreadInfo : MonoBehaviour {
         const int totalCallNum = NUM_GROUP_X * NUM_GROUP_Y * NUM_GROUP_Z * NUM_THREAD_X * NUM_THREAD_Y * NUM_THREAD_Z;
 
         // カーネルのインデックス取得
-        int getThreadInfo = computeShader.FindKernel("GetThreadInfo");
+        int kernelIndex = computeShader.FindKernel("GetThreadInfo");
 
         // 返却用バッファーを作成、紐づけ
         ComputeBuffer threadInfoBuffer = new ComputeBuffer(totalCallNum, Marshal.SizeOf(typeof(ThreadInfo)));
-        computeShader.SetBuffer(getThreadInfo, "threadInfo", threadInfoBuffer);
+        computeShader.SetBuffer(kernelIndex, "threadInfo", threadInfoBuffer);
 
         // ComputeShader実行。
-        computeShader.Dispatch(getThreadInfo, NUM_GROUP_X, NUM_GROUP_Y, NUM_GROUP_Z);
+        computeShader.Dispatch(kernelIndex, NUM_GROUP_X, NUM_GROUP_Y, NUM_GROUP_Z);
 
         // 結果の取得
         ThreadInfo[] threadInfoResults = new ThreadInfo[totalCallNum];

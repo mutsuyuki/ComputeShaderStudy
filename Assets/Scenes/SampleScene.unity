@@ -180,7 +180,7 @@ GameObject:
   - component: {fileID: 1132874804}
   - component: {fileID: 1132874803}
   m_Layer: 0
-  m_Name: GetThreadInfoToLog
+  m_Name: Basic_GetThreadInfoToLog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
