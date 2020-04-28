@@ -1,7 +1,9 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
-public class WriteToTexture : MonoBehaviour {
+public class WriteNoises : MonoBehaviour {
     [SerializeField] private ComputeShader computeShader;
     [SerializeField] private RenderTexture targetTexture; // 出力先のテクスチャ
 
@@ -18,28 +20,31 @@ public class WriteToTexture : MonoBehaviour {
         }
 
         // ComputeShaderから書き込む用のテクスチャを最終出力テクスチャの形に合わせて生成
-        tempTexture = new RenderTexture(targetTexture.width, targetTexture.height, 0, targetTexture.format);
+        tempTexture = new RenderTexture(targetTexture.width, targetTexture.height, 1, targetTexture.format);
         tempTexture.enableRandomWrite = true;
 
         // ComputeShaderにテクスチャをセット
-        kernelIndex = computeShader.FindKernel("SetColorByPosition");
+        kernelIndex = computeShader.FindKernel("SetFBMNoise");
         computeShader.SetTexture(kernelIndex, "textureBuffer", tempTexture);
 
         // テクスチャサイズのチェック
         computeShader.GetKernelThreadGroupSizes(kernelIndex, out threadSizeX, out threadSizeY, out threadSizeZ);
-        float threadGroupSizeX = (float) targetTexture.width / threadSizeX;
-        float threadGroupSizeY = (float) targetTexture.height / threadSizeY;
+        float threadGroupSizeX = (float) tempTexture.width / threadSizeX;
+        float threadGroupSizeY = (float) tempTexture.height / threadSizeY;
         if (threadGroupSizeX % 1 != 0 || threadGroupSizeY % 1 != 0) {
             Debug.LogError("スレッドグループ数が整数にならないので、テクスチャサイズを変えてください。");
         }
     }
 
     void Update() {
+        if (Random.Range(0.0f, 1.0f) < 0.1)
+            return;
+        
         computeShader.Dispatch(
             kernelIndex,
-            targetTexture.width / (int) threadSizeX,
-            targetTexture.height / (int) threadSizeY,
-            (int) threadSizeZ
+            tempTexture.width / (int) threadSizeX,
+            tempTexture.height / (int) threadSizeY,
+            1 
         );
 
         Graphics.CopyTexture(tempTexture, targetTexture);

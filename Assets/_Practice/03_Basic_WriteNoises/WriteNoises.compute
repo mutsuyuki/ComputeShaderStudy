@@ -1,0 +1,23 @@
+﻿#pragma kernel SetFBMNoise
+
+#include "../Common_cginc/Random.cginc"
+#include "../Common_cginc/ValueNoise.cginc"
+#include "../Common_cginc/BlockNoise.cginc"
+#include "../Common_cginc/PerlinNoise.cginc"
+#include "../Common_cginc/FBMNoise.cginc"
+
+RWTexture2D<float4> textureBuffer;
+
+[numthreads(8, 8, 1)]
+void SetFBMNoise(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    // SV_DispathThreadID は、SV_Group_ID * numthreads + GroupThreadID です。
+    float width, height;
+    textureBuffer.GetDimensions(width, height);
+    
+    float red = dispatchThreadID.x / width;
+    float green = dispatchThreadID.y / height;
+    float blue = (red + green) / 2.0;
+    float noiseValue = FBMNoise(float3(red,green,blue));
+    textureBuffer[dispatchThreadID.xy] = float4(noiseValue,noiseValue,noiseValue,1);
+}

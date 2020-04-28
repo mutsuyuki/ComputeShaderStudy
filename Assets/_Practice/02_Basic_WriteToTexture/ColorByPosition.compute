@@ -1,5 +1,11 @@
 ﻿#pragma kernel SetColorByPosition
 
+#include "../Common_cginc/Random.cginc"
+#include "../Common_cginc/ValueNoise.cginc"
+#include "../Common_cginc/BlockNoise.cginc"
+#include "../Common_cginc/PerlinNoise.cginc"
+#include "../Common_cginc/FBMNoise.cginc"
+
 RWTexture2D<float4> textureBuffer;
 
 [numthreads(8, 8, 1)]
