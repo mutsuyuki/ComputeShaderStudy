@@ -1,7 +1,7 @@
 ﻿#ifndef __FBMNoise_cginc__
 #define __FBMNoise_cginc__
 
-#include "FBMNoise.cginc"
+#include "PerlinNoise.cginc"
 
 float FBMNoise(float2 pos, float2 gridSize = 5, int octaves = 3, float roughness = 0.5){
     float2 currentFrequency = gridSize;

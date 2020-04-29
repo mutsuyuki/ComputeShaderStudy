@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class WriteNoises : MonoBehaviour {
+public class WriteToTexture : MonoBehaviour {
     [SerializeField] private ComputeShader computeShader;
     [SerializeField] private RenderTexture targetTexture; // 出力先のテクスチャ
 
@@ -24,7 +24,7 @@ public class WriteNoises : MonoBehaviour {
         tempTexture.enableRandomWrite = true;
 
         // ComputeShaderにテクスチャをセット
-        kernelIndex = computeShader.FindKernel("SetFBMNoise");
+        kernelIndex = computeShader.FindKernel("SetColorByPosition");
         computeShader.SetTexture(kernelIndex, "textureBuffer", tempTexture);
 
         // テクスチャサイズのチェック

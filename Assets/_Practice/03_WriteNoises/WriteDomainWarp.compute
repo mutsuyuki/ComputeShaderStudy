@@ -1,0 +1,21 @@
+﻿#pragma kernel WriteDomainWarp
+
+#include "../Common_cginc/DomainWarp.cginc"
+
+RWTexture2D<float4> textureBuffer;
+float time;
+
+[numthreads(8, 8, 1)]
+void WriteDomainWarp(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    // SV_DispathThreadID は、SV_Group_ID * numthreads + GroupThreadID です。
+    float width, height;
+    textureBuffer.GetDimensions(width, height);
+    
+    float x = dispatchThreadID.x / width;
+    float y = dispatchThreadID.y / height;
+    float z = 1;
+    float noise = DomainWarp3D(float3(x,y,z), time, 4, 3, 0.5).z;
+    
+    textureBuffer[dispatchThreadID.xy] = float4(noise, noise, noise, 1);
+}

@@ -17,6 +17,6 @@ void SetColorByPosition(uint3 dispatchThreadID : SV_DispatchThreadID)
     
     float red = dispatchThreadID.x / width;
     float green = dispatchThreadID.y / height;
-    float blue = (red + green) / 2.0;
+    float blue = 0;
     textureBuffer[dispatchThreadID.xy] = float4(red, green, blue, 1);
 }
