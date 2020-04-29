@@ -1,12 +1,11 @@
-﻿#pragma kernel WriteDomainWarp
+﻿#pragma kernel WritePerlinNoise
 
-#include "../Common_cginc/DomainWarp.cginc"
+#include "../Common_cginc/PerlinNoise.cginc"
 
 RWTexture2D<float4> textureBuffer;
-float time;
 
 [numthreads(8, 8, 1)]
-void WriteDomainWarp(uint3 dispatchThreadID : SV_DispatchThreadID)
+void WritePerlinNoise(uint3 dispatchThreadID : SV_DispatchThreadID)
 {
     // SV_DispathThreadID は、SV_Group_ID * numthreads + GroupThreadID です。
     float width, height;
@@ -14,8 +13,8 @@ void WriteDomainWarp(uint3 dispatchThreadID : SV_DispatchThreadID)
     
     float x = dispatchThreadID.x / width;
     float y = dispatchThreadID.y / height;
-    float z = 1;
-    float noise = DomainWarp3D(float3(x,y,z), time, 4, 3, 0.5).z;
-    
+    float z = 1.0;
+    float noise = PerlinNoise(float3(x,y,z), 7);
     textureBuffer[dispatchThreadID.xy] = float4(noise, noise, noise, 1);
 }
+

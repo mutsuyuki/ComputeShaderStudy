@@ -4,8 +4,15 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class WriteNoises : MonoBehaviour {
+    [SerializeField] private ComputeShader blockNoiseShader;
+    [SerializeField] private RenderTexture blockNoiseTexture; // 出力先のテクスチャ
+
+    [SerializeField] private ComputeShader perlinNoiseShader;
+    [SerializeField] private RenderTexture perlinNoiseTexture; // 出力先のテクスチャ
+
     [SerializeField] private ComputeShader fbmNoiseShader;
     [SerializeField] private RenderTexture fbmNoiseTexture; // 出力先のテクスチャ
+
     [SerializeField] private ComputeShader domainWarpShader;
     [SerializeField] private RenderTexture domainWarpTexture; // 出力先のテクスチャ
 
@@ -17,10 +24,14 @@ public class WriteNoises : MonoBehaviour {
         public RenderTexture tempTexture; // アセットのテクスチャは直接いじれないので、ここに一回書き込む
     }
 
+    private KernelInfo blockNoiseInfo;
+    private KernelInfo perlinNoiseInfo;
     private KernelInfo fbmNoiseInfo;
     private KernelInfo domainWarpInfo;
 
     void Start() {
+        blockNoiseInfo = initShader(blockNoiseShader, blockNoiseTexture, "WriteBlockNoise");
+        perlinNoiseInfo = initShader(perlinNoiseShader, perlinNoiseTexture, "WritePerlinNoise");
         fbmNoiseInfo = initShader(fbmNoiseShader, fbmNoiseTexture, "WriteFBMNoise");
         domainWarpInfo = initShader(domainWarpShader, domainWarpTexture, "WriteDomainWarp");
     }
@@ -57,6 +68,25 @@ public class WriteNoises : MonoBehaviour {
     }
 
     void Update() {
+        // Block Noise -------------------
+        blockNoiseShader.Dispatch(
+            blockNoiseInfo.kernelIndex,
+            blockNoiseInfo.tempTexture.width / (int) blockNoiseInfo.threadSizeX,
+            blockNoiseInfo.tempTexture.height / (int) blockNoiseInfo.threadSizeY,
+            1
+        );
+        Graphics.CopyTexture(blockNoiseInfo.tempTexture, blockNoiseTexture);
+        
+        // Perlin Noise -------------------
+        perlinNoiseShader.Dispatch(
+            perlinNoiseInfo.kernelIndex,
+            perlinNoiseInfo.tempTexture.width / (int) perlinNoiseInfo.threadSizeX,
+            perlinNoiseInfo.tempTexture.height / (int) perlinNoiseInfo.threadSizeY,
+            1
+        );
+        Graphics.CopyTexture(perlinNoiseInfo.tempTexture, perlinNoiseTexture);
+
+        // Domain Warp Noise -------------------
         fbmNoiseShader.Dispatch(
             fbmNoiseInfo.kernelIndex,
             fbmNoiseInfo.tempTexture.width / (int) fbmNoiseInfo.threadSizeX,
@@ -65,6 +95,7 @@ public class WriteNoises : MonoBehaviour {
         );
         Graphics.CopyTexture(fbmNoiseInfo.tempTexture, fbmNoiseTexture);
 
+        // Domain Warp Noise -------------------
         domainWarpShader.SetFloat("time", Time.time);
         domainWarpShader.Dispatch(
             domainWarpInfo.kernelIndex,

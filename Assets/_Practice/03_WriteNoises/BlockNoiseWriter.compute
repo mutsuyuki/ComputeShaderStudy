@@ -1,0 +1,20 @@
+﻿#pragma kernel WriteBlockNoise
+
+#include "../Common_cginc/BlockNoise.cginc"
+
+RWTexture2D<float4> textureBuffer;
+
+[numthreads(8, 8, 1)]
+void WriteBlockNoise(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    // SV_DispathThreadID は、SV_Group_ID * numthreads + GroupThreadID です。
+    float width, height;
+    textureBuffer.GetDimensions(width, height);
+    
+    float x = dispatchThreadID.x / width;
+    float y = dispatchThreadID.y / height;
+    float z = 1.0;
+    float noise = BlockNoise(float3(x,y,z), 7);
+    textureBuffer[dispatchThreadID.xy] = float4(noise, noise, noise, 1);
+}
+
