@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 109706a5ac7b525438f2e1f94ee3b4c6, type: 3}
+  m_Name: TextureMaker
+  m_EditorClassIdentifier: 
+  computeShader: {fileID: 7200000, guid: 0e8a978fe1b785744add0fef659cd2f0, type: 3}
+  texture2DSize: {x: 64, y: 64}
+  texture3DSize: {x: 128, y: 128, z: 128}
+  textureFormat: 11
+  outDir: {fileID: 0}

@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEditor;
-using UnityEngine;
-using Random = UnityEngine.Random;
+﻿using UnityEngine;
 
 public class WriteNoises : MonoBehaviour {
     [SerializeField] private ComputeShader blockNoiseShader;
@@ -86,7 +83,7 @@ public class WriteNoises : MonoBehaviour {
         );
         Graphics.CopyTexture(perlinNoiseInfo.tempTexture, perlinNoiseTexture);
 
-        // Domain Warp Noise -------------------
+        // Fractal Brown Movement Noise -------------------
         fbmNoiseShader.Dispatch(
             fbmNoiseInfo.kernelIndex,
             fbmNoiseInfo.tempTexture.width / (int) fbmNoiseInfo.threadSizeX,

@@ -1,0 +1,69 @@
+﻿#pragma kernel SetPositionColor2D
+#pragma kernel SetPositionColor3D
+#pragma kernel SetRandomColor2D
+#pragma kernel SetRandomColor3D
+
+RWTexture2D<float4> textureBuffer2D;
+RWTexture3D<float4> textureBuffer3D;
+
+// ---- 位置をカラーに変換 ----------------------------------------------
+
+[numthreads(8, 8, 1)]
+void SetPositionColor2D(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    // SV_DispathThreadID は、SV_Group_ID * numthreads + GroupThreadID です。
+    float width, height;
+    textureBuffer2D.GetDimensions(width, height);
+    
+    float red = dispatchThreadID.x / width;
+    float green = dispatchThreadID.y / height;
+    float blue = (red + green) / 2.0;
+    textureBuffer2D[dispatchThreadID.xy] = float4(red, green, blue, 1);
+}
+
+[numthreads(8, 8, 8)]
+void SetPositionColor3D(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    // SV_DispathThreadID は、SV_Group_ID * numthreads + GroupThreadID です。
+    float width, height, depth;
+    textureBuffer3D.GetDimensions(width, height, depth);
+    
+    float red = dispatchThreadID.x / width;
+    float green = dispatchThreadID.y / height;
+    float blue = dispatchThreadID.z / depth;
+    textureBuffer3D[dispatchThreadID.xyz] = float4(red, green, blue, 1);
+}
+
+
+// ---- ランダムカラー ----------------------------------------------------
+
+float Random(float3 seed)
+{
+    return frac(sin(dot(seed.xyz, float3(12.9898, 78.233, 56.787))) * 43758.5453);
+}
+
+[numthreads(8, 8, 1)]
+void SetRandomColor2D(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    // SV_DispathThreadID は、SV_Group_ID * numthreads + GroupThreadID です。
+    float width, height;
+    textureBuffer2D.GetDimensions(width, height);
+    
+    float red = Random(dispatchThreadID  + 123.456);
+    float green = Random(dispatchThreadID + 234.567);
+    float blue = Random(dispatchThreadID + 345.678);
+    textureBuffer2D[dispatchThreadID.xy] = float4(red, green, blue, 1);
+}
+
+[numthreads(8, 8, 8)]
+void SetRandomColor3D(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    // SV_DispathThreadID は、SV_Group_ID * numthreads + GroupThreadID です。
+    float width, height, depth;
+    textureBuffer3D.GetDimensions(width, height, depth);
+    
+    float red = Random(dispatchThreadID + 123.456);
+    float green = Random(dispatchThreadID + 234.567);
+    float blue = Random(dispatchThreadID + 345.678);
+    textureBuffer3D[dispatchThreadID.xyz] = float4(red, green, blue, 1);
+}

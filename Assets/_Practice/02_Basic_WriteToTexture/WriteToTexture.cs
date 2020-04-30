@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEditor;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class WriteToTexture : MonoBehaviour {
     [SerializeField] private ComputeShader computeShader;
@@ -37,9 +36,6 @@ public class WriteToTexture : MonoBehaviour {
     }
 
     void Update() {
-        if (Random.Range(0.0f, 1.0f) < 0.1)
-            return;
-        
         computeShader.Dispatch(
             kernelIndex,
             tempTexture.width / (int) threadSizeX,
