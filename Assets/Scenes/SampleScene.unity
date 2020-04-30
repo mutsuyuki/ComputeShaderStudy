@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updatePositionsShader: {fileID: 7200000, guid: 71acf847a564bdb4483fdc5ce1a197d6,
     type: 3}
-  initialPositions: {fileID: 8400000, guid: cd5b34726149d434485af9223836b549, type: 2}
+  initialPositions: {fileID: 8400000, guid: 0b4ad72933d534049acbf53f18fec86e, type: 2}
   currentPositions: {fileID: 8400000, guid: 6ce982dcc09a9e74f88a56df39b2ffa2, type: 2}
 --- !u!73398921 &238495624
 VFXRenderer:
