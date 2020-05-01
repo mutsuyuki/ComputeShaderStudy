@@ -1,10 +1,22 @@
-﻿#pragma kernel MoveByFBMNoise
+﻿#pragma kernel SetInitialPositions
+#pragma kernel MoveByFBMNoise
 
+#include "../Common_cginc/Random.cginc"
 #include "../Common_cginc/FBMNoise.cginc"
 
 RWTexture2D<float4> oldPositions;
 RWTexture2D<float4> newPositions;
 float time;
+
+[numthreads(8, 8, 1)]
+void SetInitialPositions(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    float x = Random(dispatchThreadID  + 123.456) - 0.5;
+    float y = Random(dispatchThreadID + 234.567) - 0.5;
+    float z = Random(dispatchThreadID + 345.678) - 0.5;
+    newPositions[dispatchThreadID.xy] = float4(x, y, z, 1);
+}
+
 
 [numthreads(8, 8, 1)]
 void MoveByFBMNoise(uint3 dispatchThreadID : SV_DispatchThreadID)
