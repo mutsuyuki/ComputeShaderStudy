@@ -17,10 +17,12 @@ public class UpdatePositionsByNoises : MonoBehaviour {
 
     private KernelInfo initializeKernel;
     private List<KernelInfo> kernelInfos = new List<KernelInfo>();
+    private int currentKernelIndex = 0;
 
     void Start() {
         initializeKernel = initShader(updatePositionsShader, currentPositions, "SetInitialPositions");
         kernelInfos.Add(initShader(updatePositionsShader, currentPositions, "MoveByFBMNoise"));
+        kernelInfos.Add(initShader(updatePositionsShader, currentPositions, "MoveByCurlNoise"));
     }
 
     private static KernelInfo initShader(ComputeShader shader, RenderTexture positionTexture, string kernelName) {
@@ -60,11 +62,14 @@ public class UpdatePositionsByNoises : MonoBehaviour {
     }
 
     void Update() {
-        
-        var currnetKernel = kernelInfos[0];
-        
+        var currnetKernel = kernelInfos[currentKernelIndex];
+
         // initialize per period -------------------
-        if (Time.frameCount % 2000 == 1) {
+        if (Time.frameCount % 2000 == 0) {
+            currentKernelIndex++;
+            if (currentKernelIndex >= kernelInfos.Count)
+                currentKernelIndex = 0;
+
             updatePositionsShader.SetTexture(initializeKernel.kernelIndex, "newPositions", initializeKernel.newPositions);
             updatePositionsShader.Dispatch(
                 initializeKernel.kernelIndex,
@@ -74,7 +79,7 @@ public class UpdatePositionsByNoises : MonoBehaviour {
             );
             Graphics.CopyTexture(initializeKernel.newPositions, currnetKernel.newPositions);
         }
-        
+
         // move by noise -------------------
         Graphics.CopyTexture(currnetKernel.newPositions, currnetKernel.oldPositions);
         updatePositionsShader.SetTexture(currnetKernel.kernelIndex, "oldPositions", currnetKernel.oldPositions);
