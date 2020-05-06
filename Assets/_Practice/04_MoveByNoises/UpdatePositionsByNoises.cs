@@ -23,6 +23,8 @@ public class UpdatePositionsByNoises : MonoBehaviour {
         initializeKernel = initShader(updatePositionsShader, currentPositions, "SetInitialPositions");
         kernelInfos.Add(initShader(updatePositionsShader, currentPositions, "MoveByFBMNoise"));
         kernelInfos.Add(initShader(updatePositionsShader, currentPositions, "MoveByCurlNoise"));
+        
+        ResetPosition(kernelInfos[0]);
     }
 
     private static KernelInfo initShader(ComputeShader shader, RenderTexture positionTexture, string kernelName) {
@@ -61,6 +63,17 @@ public class UpdatePositionsByNoises : MonoBehaviour {
         return kernelInfo;
     }
 
+    private void ResetPosition(KernelInfo currnetKernel) {
+        updatePositionsShader.SetTexture(initializeKernel.kernelIndex, "newPositions", initializeKernel.newPositions);
+        updatePositionsShader.Dispatch(
+            initializeKernel.kernelIndex,
+            initializeKernel.newPositions.width / (int) initializeKernel.threadSizeX,
+            initializeKernel.newPositions.height / (int) initializeKernel.threadSizeY,
+            1
+        );
+        Graphics.CopyTexture(initializeKernel.newPositions, currnetKernel.newPositions);
+    }
+
     void Update() {
         var currnetKernel = kernelInfos[currentKernelIndex];
 
@@ -69,15 +82,8 @@ public class UpdatePositionsByNoises : MonoBehaviour {
             currentKernelIndex++;
             if (currentKernelIndex >= kernelInfos.Count)
                 currentKernelIndex = 0;
-
-            updatePositionsShader.SetTexture(initializeKernel.kernelIndex, "newPositions", initializeKernel.newPositions);
-            updatePositionsShader.Dispatch(
-                initializeKernel.kernelIndex,
-                initializeKernel.newPositions.width / (int) initializeKernel.threadSizeX,
-                initializeKernel.newPositions.height / (int) initializeKernel.threadSizeY,
-                1
-            );
-            Graphics.CopyTexture(initializeKernel.newPositions, currnetKernel.newPositions);
+            
+            ResetPosition(currnetKernel);
         }
 
         // move by noise -------------------
