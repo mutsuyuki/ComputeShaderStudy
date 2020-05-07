@@ -23,8 +23,10 @@ public class UpdatePositionsByNoises : MonoBehaviour {
         initializeKernel = initShader(updatePositionsShader, currentPositions, "SetInitialPositions");
         kernelInfos.Add(initShader(updatePositionsShader, currentPositions, "MoveByFBMNoise"));
         kernelInfos.Add(initShader(updatePositionsShader, currentPositions, "MoveByCurlNoise"));
-        
-        ResetPosition(kernelInfos[0]);
+
+        for (int i = 0; i < kernelInfos.Count; i++) {
+            ResetPosition(kernelInfos[i]);
+        }
     }
 
     private static KernelInfo initShader(ComputeShader shader, RenderTexture positionTexture, string kernelName) {
@@ -78,7 +80,7 @@ public class UpdatePositionsByNoises : MonoBehaviour {
         var currnetKernel = kernelInfos[currentKernelIndex];
 
         // initialize per period -------------------
-        if (Time.frameCount % 2000 == 0) {
+        if (Time.frameCount % 800 == 0) {
             currentKernelIndex++;
             if (currentKernelIndex >= kernelInfos.Count)
                 currentKernelIndex = 0;
