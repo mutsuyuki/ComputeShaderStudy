@@ -11,8 +11,9 @@ Compute shader practice log.
 
 move by FBM noise
 
-![2020-05-04 15_49_07](https://user-images.githubusercontent.com/16832362/81240823-7a764000-9043-11ea-9191-cf57909d924e.png)
+<img width="741" alt="2020-05-04 05_19_34" src="https://user-images.githubusercontent.com/16832362/81240869-9bd72c00-9043-11ea-86f8-efdfddd068ae.png">
 
 move by curl noise
 
-<img width="741" alt="2020-05-04 05_19_34" src="https://user-images.githubusercontent.com/16832362/81240869-9bd72c00-9043-11ea-86f8-efdfddd068ae.png">
+![2020-05-04 15_49_07](https://user-images.githubusercontent.com/16832362/81240823-7a764000-9043-11ea-9191-cf57909d924e.png)
+
